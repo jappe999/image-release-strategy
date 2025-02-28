@@ -48,4 +48,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VERSION=${{ steps.version.outputs.version }}
+            VERSION=${{ startsWith(steps.version.outputs.version, 'refs/heads') ? 'edge' : steps.version.outputs.version }}
