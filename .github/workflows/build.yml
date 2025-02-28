@@ -55,7 +55,7 @@ jobs:
             type=ref,event=tag
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
             type=edge,enable=${{ needs.prepare.outputs.is-head-master == 'true' }}
-            type=latest,enable=${{ needs.prepare.outputs.is-latest-release == 'true' }}
+            type=raw,value=latest,enable=${{ needs.prepare.outputs.is-latest-release == 'true' }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
