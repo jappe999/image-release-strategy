@@ -12,8 +12,30 @@ permissions:
   packages: write
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      is-head-master: ${{ steps.is-head-master.outcome == 'success' }}
+      is-latest-release: ${{ steps.is-latest-release.outcome == 'success' }}
+    steps:
+      - name: Check whether this event is the HEAD of master
+        continue-on-error: true
+        id: is-head-master
+        run: git rev-parse HEAD | grep -x ${{ github.sha }}
+        shell: bash
+
+      - name: Check whether the release is latest
+        continue-on-error: true
+        id: is-latest-release
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release view --json tagName --jq .tagName | grep -x ${{ github.event.release.tag_name }}
+        shell: bash
+
   publish-docker-image:
     runs-on: ubuntu-latest
+    needs: prepare
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,8 +52,10 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
+            type=ref,event=tag
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
-            type=raw,value=edge
+            type=edge,enable=${{ needs.prepare.outputs.is-head-master == 'true' }}
+            type=latest,enable=${{ needs.prepare.outputs.is-latest-release == 'true' }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
