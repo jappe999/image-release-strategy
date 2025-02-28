@@ -1,5 +1,7 @@
 # Docker image release strategy
 
+[![Edge release](https://github.com/jappe999/image-release-strategy/actions/workflows/build.yml/badge.svg?event=push)](https://github.com/jappe999/image-release-strategy/actions/workflows/build.yml)
+
 This repository demonstrates a strategy for releasing docker images in two phases:
 
 - **`edge`:** Contains bleeding edge changes from the main branch.
