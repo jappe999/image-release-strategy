@@ -15,12 +15,15 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      is-head-master: ${{ steps.is-head-master.outcome == 'success' }}
+      is-head-main: ${{ steps.is-head-main.outcome == 'success' }}
       is-latest-release: ${{ steps.is-latest-release.outcome == 'success' }}
     steps:
-      - name: Check whether this event is the HEAD of master
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check whether this event is the HEAD of main
         continue-on-error: true
-        id: is-head-master
+        id: is-head-main
         run: git rev-parse HEAD | grep -x ${{ github.sha }}
         shell: bash
 
@@ -53,7 +56,7 @@ jobs:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
-            type=edge,enable=${{ needs.prepare.outputs.is-head-master == 'true' }}
+            type=edge,enable=${{ needs.prepare.outputs.is-head-main == 'true' }}
             type=raw,value=latest,enable=${{ needs.prepare.outputs.is-latest-release == 'true' }}
 
       - name: Login to GitHub Container Registry
