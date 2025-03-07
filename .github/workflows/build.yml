@@ -10,7 +10,6 @@ on:
 permissions:
   contents: write
   packages: write
-  security-events: write
 
 jobs:
   publish-docker-image:
