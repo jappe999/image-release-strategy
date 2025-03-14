@@ -6,6 +6,7 @@ on:
   release:
     # Note: a current limitation is that when a release is edited after publication, then the Docker tags are not automatically updated.
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -38,6 +39,7 @@ jobs:
           tags: |
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
             type=edge,enable=${{ steps.is-head-main.outcome == 'success' }}
+            type=ref,event=branch,enable=${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
